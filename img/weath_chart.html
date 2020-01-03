@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+   
+    
+</head>
+<body>
+
+    <div style="width:50vw">
+    <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+
+<script>
+        
+
+
+</script>
+
+<script>
+    $.getJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-D0047-091?Authorization=CWB-DC42A587-7FB9-4149-A568-AEAF94703590&downloadType=WEB&format=JSON")
+    .done(function(e){
+        kl=e.cwbopendata.dataset.locations.location[13];
+        let tp=e.cwbopendata.dataset.locations.location[16];
+        let nt=e.cwbopendata.dataset.locations.location[18];
+        let tu=e.cwbopendata.dataset.locations.location[21];
+        //console.log(kl,tp,nt,tu);
+    let date_line=new Array();
+    let k=new Array(),t=new Array(),n=new Array(),u=new Array();
+
+    for(let i=0;i<kl.weatherElement[0].time.length;i++){
+        date_line.push(kl.weatherElement[0].time[i].startTime.substring(0,13));
+        //四個縣市溫度陣列
+        k.push(kl.weatherElement[0].time[i].elementValue.value);
+        t.push(tp.weatherElement[0].time[i].elementValue.value);
+        n.push(nt.weatherElement[0].time[i].elementValue.value);
+        u.push(tu.weatherElement[0].time[i].elementValue.value);
+    }
+    //console.log(k,t,n,u);
+
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: "line",//可以切套件樣式
+    data: {
+        labels: date_line,//x軸名稱
+        datasets: [
+            {
+            label: '基隆市',
+            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+            borderColor: 'rgb(255, 150, 60)',
+            data: k,
+            borderWidth:4
+        },
+        {
+            label: '台北市',
+            backgroundColor: 'rgba(255, 99, 92, 0.1)',
+            borderColor: 'rgb(255, 100, 132)',
+            data: t,
+            borderWidth:4
+        },
+        {
+            label: '新北市',
+            backgroundColor: 'rgba(255, 99, 92, 0.1)',
+            borderColor: 'rgb(255, 100, 132)',
+            data: n,
+            borderWidth:4
+        },
+        {
+            label: '桃園市',
+            backgroundColor: 'rgba(255, 99, 92, 0.1)',
+            borderColor: 'rgb(255, 100, 132)',
+            data: u,
+            borderWidth:4
+        }
+      
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    suggestedMin: Math.min.apply(k,t,n,u)-2,
+                    suggestedMax: Math.min.apply(k,t,n,u)+2,
+                    stepSize:0.5
+                }
+            }]
+        }
+    }
+});
+
+    })
+    .fail(function(){
+       alert("this api fail"); 
+    });
+   
+</script>
+</body>
+</html>
